@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Weather App</title>
+    <style>
+        /* Add some basic styling here */
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>What's the weather like?</h1>
+    <button onclick="getLocation()">Get Weather</button>
+    <div id="weather-info"></div>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("weather-info").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+            fetchWeather(latitude, longitude);
+        }
+
+        function showError(error) {
+            document.getElementById("weather-info").innerHTML = "Error getting location: " + error.message;
+        }
+
+        function fetchWeather(latitude, longitude) {
+            // Replace with your OpenWeatherMap API key
+            const apiKey = "YOUR_API_KEY"; // PJL 0329241049 insert YOUR_API_KEY here
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const city = data.name;
+                    const temp = Math.round(data.main.temp - 273.15); // Convert Kelvin to Celsius
+                    const weather = data.weather[0].main;
+                    const weatherInfo = `<h2>${city}</h2><p>Temperature: ${temp}°C</p><p>Weather: ${weather}</p>`;
+                    document.getElementById("weather-info").innerHTML = weatherInfo;
+                })
+                .catch(error => {
+                    document.getElementById("weather-info").innerHTML = "Error fetching weather data.";
+                });
+        }
+    </script>
+</body>
+</html>
